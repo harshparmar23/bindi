@@ -40,83 +40,85 @@ export default function About() {
   ];
 
   useEffect(() => {
-    gsap.registerPlugin(ScrollTrigger);
+    if (typeof window !== "undefined") {
+      gsap.registerPlugin(ScrollTrigger);
 
-    const fadeUpElements = document.querySelectorAll(".fade-up");
-    fadeUpElements.forEach((element) => {
+      const fadeUpElements = document.querySelectorAll(".fade-up");
+      fadeUpElements.forEach((element) => {
+        gsap.fromTo(
+          element,
+          { opacity: 0, y: 50 },
+          {
+            opacity: 1,
+            y: 0,
+            duration: 1,
+            scrollTrigger: {
+              trigger: element,
+              start: "top 80%",
+              end: "bottom 20%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      });
+
+      const promiseElements = document.querySelectorAll(".promise");
       gsap.fromTo(
-        element,
-        { opacity: 0, y: 50 },
-        {
-          opacity: 1,
-          y: 0,
-          duration: 1,
-          scrollTrigger: {
-            trigger: element,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
-    });
-
-    const promiseElements = document.querySelectorAll(".promise");
-    gsap.fromTo(
-      promiseElements,
-      { opacity: 0, y: 50, scale: 0.8 },
-      {
-        opacity: 1,
-        y: 0,
-        scale: 1,
-        duration: 1,
-        stagger: 0.2,
-        scrollTrigger: {
-          trigger: promiseElements,
-          start: "top 80%",
-          end: "bottom 20%",
-          toggleActions: "play none none reverse",
-        },
-      }
-    );
-
-    const feedbackForm = document.querySelector(".feedback-form");
-    if (feedbackForm) {
-      gsap.fromTo(
-        feedbackForm,
+        promiseElements,
         { opacity: 0, y: 50, scale: 0.8 },
         {
           opacity: 1,
           y: 0,
           scale: 1,
           duration: 1,
+          stagger: 0.2,
           scrollTrigger: {
-            trigger: feedbackForm,
+            trigger: promiseElements,
             start: "top 80%",
             end: "bottom 20%",
             toggleActions: "play none none reverse",
           },
         }
       );
-    }
 
-    const contactInfo = document.querySelector(".contact-info");
-    if (contactInfo) {
-      gsap.fromTo(
-        contactInfo,
-        { opacity: 0, x: 50 },
-        {
-          opacity: 1,
-          x: 0,
-          duration: 1,
-          scrollTrigger: {
-            trigger: contactInfo,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
+      const feedbackForm = document.querySelector(".feedback-form");
+      if (feedbackForm) {
+        gsap.fromTo(
+          feedbackForm,
+          { opacity: 0, y: 50, scale: 0.8 },
+          {
+            opacity: 1,
+            y: 0,
+            scale: 1,
+            duration: 1,
+            scrollTrigger: {
+              trigger: feedbackForm,
+              start: "top 80%",
+              end: "bottom 20%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
+
+      const contactInfo = document.querySelector(".contact-info");
+      if (contactInfo) {
+        gsap.fromTo(
+          contactInfo,
+          { opacity: 0, x: 50 },
+          {
+            opacity: 1,
+            x: 0,
+            duration: 1,
+            scrollTrigger: {
+              trigger: contactInfo,
+              start: "top 80%",
+              end: "bottom 20%",
+              toggleActions: "play none none reverse",
+            },
+          }
+        );
+      }
     }
   }, []);
 

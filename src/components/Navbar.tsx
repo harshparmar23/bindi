@@ -33,40 +33,42 @@ const Navbar = () => {
 
   useEffect(() => {
     // Select all tab elements
-    const tabs = document.querySelectorAll(".tabs");
+    if (typeof window !== "undefined") {
+      const tabs = document.querySelectorAll(".tabs");
 
-    // Event handlers for hover
-    const handleMouseEnter = (e: Event) => {
-      const tab = e.currentTarget as HTMLElement;
-      gsap.to(tab, {
-        x: 20,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-    };
+      // Event handlers for hover
+      const handleMouseEnter = (e: Event) => {
+        const tab = e.currentTarget as HTMLElement;
+        gsap.to(tab, {
+          x: 20,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      };
 
-    const handleMouseLeave = (e: Event) => {
-      const tab = e.currentTarget as HTMLElement;
-      gsap.to(tab, {
-        x: 0,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-    };
+      const handleMouseLeave = (e: Event) => {
+        const tab = e.currentTarget as HTMLElement;
+        gsap.to(tab, {
+          x: 0,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      };
 
-    // Add event listeners to each tab
-    tabs.forEach((tab) => {
-      tab.addEventListener("mouseenter", handleMouseEnter);
-      tab.addEventListener("mouseleave", handleMouseLeave);
-    });
-
-    // Cleanup function
-    return () => {
+      // Add event listeners to each tab
       tabs.forEach((tab) => {
-        tab.removeEventListener("mouseenter", handleMouseEnter);
-        tab.removeEventListener("mouseleave", handleMouseLeave);
+        tab.addEventListener("mouseenter", handleMouseEnter);
+        tab.addEventListener("mouseleave", handleMouseLeave);
       });
-    };
+
+      // Cleanup function
+      return () => {
+        tabs.forEach((tab) => {
+          tab.removeEventListener("mouseenter", handleMouseEnter);
+          tab.removeEventListener("mouseleave", handleMouseLeave);
+        });
+      };
+    }
   }, [isMenuOpen]); // Re-run when menu opens/closes
 
   useEffect(() => {

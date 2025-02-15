@@ -175,10 +175,12 @@ function Products() {
 
   // Set body overflow to prevent horizontal scroll
   useEffect(() => {
-    document.body.style.overflowX = "hidden";
-    return () => {
-      document.body.style.overflowX = "auto";
-    };
+    if (typeof window !== "undefined") {
+      document.body.style.overflowX = "hidden";
+      return () => {
+        document.body.style.overflowX = "auto";
+      };
+    }
   }, []);
 
   // Add to cart function
