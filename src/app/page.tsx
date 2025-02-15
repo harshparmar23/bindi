@@ -1,13 +1,20 @@
-import HomeLanding from "@/components/HomeLanding"; // Adjust the path as necessary
-import { InfiniteName } from "@/components/HomeInfiniteName";
+import dynamic from "next/dynamic";
+import HomeLanding from "@/components/HomeLanding";
 import TopCategories from "@/components/HomeTopCategories";
 import ImageGallery from "@/components/HomeImageGallery";
 import CustomerReviews from "@/components/HomeCustomerReviews";
 import TopItems from "@/components/HomeTopItems";
 import FAQs from "@/components/HomeFaqs";
+
+// Dynamically import InfiniteName with no SSR
+const InfiniteName = dynamic(
+  () => import("@/components/HomeInfiniteName").then((mod) => mod.InfiniteName),
+  { ssr: false }
+);
+
 export default function Home() {
   return (
-    <div>  
+    <div>
       <HomeLanding />
       <InfiniteName />
       <TopCategories />
@@ -16,5 +23,5 @@ export default function Home() {
       <CustomerReviews />
       <FAQs />
     </div>
-    );
+  );
 }
