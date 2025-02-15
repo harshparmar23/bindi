@@ -14,7 +14,7 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
   const secondText = useRef<HTMLParagraphElement>(null);
   const slider = useRef<HTMLDivElement>(null);
   let xPercent = 0;
-  const directionRef = useRef(-1);
+  const directionRef = useRef(-1); // Use useRef to store direction
 
   const { contextSafe } = useGSAP();
 
@@ -27,14 +27,11 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
       gsap.set(secondText.current, { xPercent });
     }
 
-    xPercent += speed * directionRef.current;
+    xPercent += speed * directionRef.current; // Use directionRef.current
     requestAnimationFrame(animate);
   });
 
   useEffect(() => {
-    // Only run on client side
-    if (typeof window === "undefined") return;
-
     gsap.registerPlugin(ScrollTrigger);
 
     if (slider.current) {
@@ -43,37 +40,34 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
           trigger: document.documentElement,
           start: 0,
           scrub: 0.35,
-          onUpdate: (e) => (directionRef.current = e.direction * -1),
+          onUpdate: (e) => (directionRef.current = e.direction * -1), // Use directionRef.current
         },
         x: "-=300px",
       });
     }
 
     requestAnimationFrame(animate);
-
-    // Cleanup function
-    return () => {
-      // Clean up ScrollTrigger instances
-      ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
-    };
   }, [animate]);
 
   return (
     <div className="z-[10] h-[120px] sm:h-[160px] md:h-[200px] w-full">
       <div className="relative flex h-full items-center overflow-hidden bg-[#3D1C1A] text-[#F5E6D3] border-none">
         <div className="absolute">
-          <div ref={slider} className="relative m-0 flex whitespace-nowrap">
+          <div
+            ref={slider}
+            className="relative m-0 flex whitespace-nowrap"
+          >
             <p
               ref={firstText}
               className="m-0 mr-3 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-tight"
-              style={{ fontFamily: "Barlow Condensed, sans-serif" }}
+              style={{ fontFamily: 'Barlow Condensed, sans-serif' }}
             >
               {text}
             </p>
             <p
               ref={secondText}
               className="m-0 text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-black uppercase tracking-tight"
-              style={{ fontFamily: "Barlow Condensed, sans-serif" }}
+              style={{ fontFamily: 'Barlow Condensed, sans-serif' }}
             >
               {text}
             </p>

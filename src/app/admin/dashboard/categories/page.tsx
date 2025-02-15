@@ -1,5 +1,5 @@
 "use client";
-import { useCallback, useState, useEffect } from "react";
+import { useCallback, useState, useEffect, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -26,7 +26,7 @@ interface Category {
   description: string;
 }
 
-export default function CategoriesPage() {
+function Categories() {
   const [categories, setCategories] = useState<Category[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingCategory, setEditingCategory] = useState<Category | null>(null);
@@ -304,4 +304,10 @@ function CategoryForm({ category, onSave, onCancel }: CategoryFormProps) {
       </div>
     </form>
   );
+}
+
+export default function CategoriesPage() {
+  <Suspense fallback={<div>Loading...</div>}>
+    <Categories />
+  </Suspense>;
 }

@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
@@ -43,7 +43,7 @@ export interface Product {
   images?: string;
 }
 
-export default function ProductsPage() {
+function Products() {
   const [products, setProducts] = useState<Product[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [editingProduct, setEditingProduct] = useState<Product | null>(null);
@@ -482,4 +482,9 @@ function ProductForm({ product, onSave, onCancel }: ProductFormProps) {
       </div>
     </form>
   );
+}
+export default function ProductsPage() {
+  <Suspense fallback={<div>Loading...</div>}>
+    <Products />
+  </Suspense>;
 }

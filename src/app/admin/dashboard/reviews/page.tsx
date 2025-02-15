@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { Switch } from "@/components/ui/switch";
 import {
   Table,
@@ -20,7 +20,7 @@ interface Review {
   createdAt: string;
 }
 
-export default function ReviewsPage() {
+function Reviews() {
   const [reviews, setReviews] = useState<Review[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [updatingId, setUpdatingId] = useState<string | null>(null);
@@ -53,7 +53,10 @@ export default function ReviewsPage() {
     }
   }
 
-  async function toggleisApproved(reviewId: string, currentisApproved: boolean) {
+  async function toggleisApproved(
+    reviewId: string,
+    currentisApproved: boolean
+  ) {
     try {
       setUpdatingId(reviewId);
       // Updated URL: use query parameter rather than path parameter.
@@ -114,7 +117,9 @@ export default function ReviewsPage() {
             <TableBody>
               {reviews.map((review) => (
                 <TableRow key={review._id}>
-                  <TableCell className="font-medium">{review.userName}</TableCell>
+                  <TableCell className="font-medium">
+                    {review.userName}
+                  </TableCell>
                   <TableCell>{review.phone}</TableCell>
                   <TableCell>{review.comment}</TableCell>
                   <TableCell>
@@ -137,4 +142,9 @@ export default function ReviewsPage() {
       )}
     </div>
   );
+}
+export default function ReviewsPage() {
+  <Suspense fallback={<div>Loading...</div>}>
+    <Reviews />
+  </Suspense>;
 }

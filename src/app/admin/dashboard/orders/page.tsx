@@ -1,5 +1,5 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 // import { Button } from "@/components/ui/button";
 import {
   Table,
@@ -82,7 +82,7 @@ const ProductsList = ({ products }: { products: OrderProduct[] }) => {
   );
 };
 
-export default function OrdersPage() {
+function Orders() {
   const [orders, setOrders] = useState<Order[]>([]);
   const [filteredOrders, setFilteredOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -256,4 +256,9 @@ export default function OrdersPage() {
       )}
     </div>
   );
+}
+export default function OrdersPage() {
+  <Suspense fallback={<div>Loading...</div>}>
+    <Orders />
+  </Suspense>;
 }

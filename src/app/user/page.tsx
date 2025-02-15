@@ -4,7 +4,7 @@ import UserpageDetails from "@/components/UserDetailsPage";
 import OrdersPage from "@/components/UserOrderPage";
 import CartPage from "@/components/UserCartPage";
 import HomeTab from "@/components/Hometab";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
 import {
@@ -163,4 +163,10 @@ const UserPage = () => {
   );
 };
 
-export default UserPage;
+const UserPageWrapper = () => {
+  <Suspense fallback={<div>Loading...</div>}>
+    <UserPage />
+  </Suspense>;
+};
+
+export default UserPageWrapper;

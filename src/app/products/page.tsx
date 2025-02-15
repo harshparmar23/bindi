@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useDebounce } from "@/hooks/useDebounce";
 import ProductCard from "../../components/ProductCard";
@@ -33,7 +33,7 @@ interface CartItem {
   quantity: number;
 }
 
-export default function ProductsPage() {
+function Products() {
   const itemsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -661,4 +661,10 @@ export default function ProductsPage() {
       </div>
     </div>
   );
+}
+
+export default function ProductsPage() {
+  <Suspense fallback={<div>Loading...</div>}>
+    <Products />
+  </Suspense>;
 }

@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { Suspense, useState } from "react";
 import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
@@ -153,4 +153,10 @@ const AdminLogin = () => {
   );
 };
 
-export default AdminLogin;
+const AdminLoginPage = () => (
+  <Suspense fallback={<div>Loading...</div>}>
+    <AdminLogin />
+  </Suspense>
+);
+
+export default AdminLoginPage;
