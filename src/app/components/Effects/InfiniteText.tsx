@@ -14,7 +14,7 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
   const secondText = useRef<HTMLParagraphElement>(null);
   const slider = useRef<HTMLDivElement>(null);
   let xPercent = 0;
-  const directionRef = useRef(-1); // Use useRef to store direction
+  const directionRef = useRef(-1);
 
   const { contextSafe } = useGSAP();
 
@@ -27,27 +27,42 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
       gsap.set(secondText.current, { xPercent });
     }
 
-    xPercent += speed * directionRef.current; // Use directionRef.current
+    xPercent += speed * directionRef.current;
     requestAnimationFrame(animate);
   });
 
   useEffect(() => {
+    // Register ScrollTrigger plugin
     gsap.registerPlugin(ScrollTrigger);
-    if (typeof window !== "undefined") {
-      if (slider.current) {
+
+    // Initialize animation only on client side
+    const initAnimation = () => {
+      if (slider.current && window) {
         gsap.to(slider.current, {
           scrollTrigger: {
-            trigger: document.documentElement,
+            trigger: window.document.documentElement,
             start: 0,
             scrub: 0.35,
-            onUpdate: (e) => (directionRef.current = e.direction * -1), // Use directionRef.current
+            onUpdate: (e) => (directionRef.current = e.direction * -1),
           },
           x: "-=300px",
         });
       }
 
       requestAnimationFrame(animate);
+    };
+
+    // Ensure we're in the browser environment
+    if (typeof window !== "undefined") {
+      initAnimation();
     }
+
+    // Cleanup
+    return () => {
+      if (typeof window !== "undefined") {
+        ScrollTrigger.getAll().forEach((trigger) => trigger.kill());
+      }
+    };
   }, [animate]);
 
   return (

@@ -1,15 +1,32 @@
 "use client";
 
-import React, { useEffect } from "react";
-import { MoveUpRight } from "lucide-react";
+import React, { useLayoutEffect } from "react";
+import {
+  MoveUpRight,
+  Phone,
+  Mail,
+  MapPin,
+  Banknote,
+  Award,
+} from "lucide-react";
 import Image from "next/image";
-import gsap from "gsap";
-import ScrollTrigger from "gsap/ScrollTrigger";
 import Link from "next/link";
-
-import { Phone, Mail, MapPin } from "lucide-react";
-import { Banknote, Award } from "lucide-react";
 import UserReviewForm from "@/app/components/UserReviewForm";
+
+// Import types only
+import type { gsap as GSAPType } from "gsap";
+import type { ScrollTrigger as ScrollTriggerType } from "gsap/ScrollTrigger";
+
+// Declare variables that will hold the actual imports
+let gsap: typeof GSAPType;
+let ScrollTrigger: typeof ScrollTriggerType;
+
+if (typeof window !== "undefined") {
+  // Dynamic imports
+  gsap = require("gsap").gsap;
+  ScrollTrigger = require("gsap/ScrollTrigger").ScrollTrigger;
+  gsap.registerPlugin(ScrollTrigger);
+}
 
 export default function About() {
   const promises = [
@@ -39,86 +56,94 @@ export default function About() {
     },
   ];
 
-  useEffect(() => {
-    if (typeof window !== "undefined") {
-      gsap.registerPlugin(ScrollTrigger);
+  useLayoutEffect(() => {
+    if (typeof window !== "undefined" && gsap) {
+      // Create a context to ensure proper cleanup
+      const ctx = gsap.context(() => {
+        // Fade up animations
+        gsap.utils.toArray<HTMLElement>(".fade-up").forEach((element) => {
+          gsap.fromTo(
+            element,
+            { opacity: 0, y: 50 },
+            {
+              opacity: 1,
+              y: 0,
+              duration: 1,
+              scrollTrigger: {
+                trigger: element,
+                start: "top 80%",
+                end: "bottom 20%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          );
+        });
 
-      const fadeUpElements = document.querySelectorAll(".fade-up");
-      fadeUpElements.forEach((element) => {
-        gsap.fromTo(
-          element,
-          { opacity: 0, y: 50 },
-          {
-            opacity: 1,
-            y: 0,
-            duration: 1,
-            scrollTrigger: {
-              trigger: element,
-              start: "top 80%",
-              end: "bottom 20%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
+        // Promise elements animations
+        gsap.utils
+          .toArray<HTMLElement>(".promise")
+          .forEach((element, index) => {
+            gsap.fromTo(
+              element,
+              { opacity: 0, y: 50, scale: 0.8 },
+              {
+                opacity: 1,
+                y: 0,
+                scale: 1,
+                duration: 1,
+                delay: index * 0.2,
+                scrollTrigger: {
+                  trigger: element,
+                  start: "top 80%",
+                  end: "bottom 20%",
+                  toggleActions: "play none none reverse",
+                },
+              }
+            );
+          });
+
+        // Feedback form animation
+        gsap.utils.toArray<HTMLElement>(".feedback-form").forEach((element) => {
+          gsap.fromTo(
+            element,
+            { opacity: 0, y: 50, scale: 0.8 },
+            {
+              opacity: 1,
+              y: 0,
+              scale: 1,
+              duration: 1,
+              scrollTrigger: {
+                trigger: element,
+                start: "top 80%",
+                end: "bottom 20%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          );
+        });
+
+        // Contact info animation
+        gsap.utils.toArray<HTMLElement>(".contact-info").forEach((element) => {
+          gsap.fromTo(
+            element,
+            { opacity: 0, x: 50 },
+            {
+              opacity: 1,
+              x: 0,
+              duration: 1,
+              scrollTrigger: {
+                trigger: element,
+                start: "top 80%",
+                end: "bottom 20%",
+                toggleActions: "play none none reverse",
+              },
+            }
+          );
+        });
       });
 
-      const promiseElements = document.querySelectorAll(".promise");
-      gsap.fromTo(
-        promiseElements,
-        { opacity: 0, y: 50, scale: 0.8 },
-        {
-          opacity: 1,
-          y: 0,
-          scale: 1,
-          duration: 1,
-          stagger: 0.2,
-          scrollTrigger: {
-            trigger: promiseElements,
-            start: "top 80%",
-            end: "bottom 20%",
-            toggleActions: "play none none reverse",
-          },
-        }
-      );
-
-      const feedbackForm = document.querySelector(".feedback-form");
-      if (feedbackForm) {
-        gsap.fromTo(
-          feedbackForm,
-          { opacity: 0, y: 50, scale: 0.8 },
-          {
-            opacity: 1,
-            y: 0,
-            scale: 1,
-            duration: 1,
-            scrollTrigger: {
-              trigger: feedbackForm,
-              start: "top 80%",
-              end: "bottom 20%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-      }
-
-      const contactInfo = document.querySelector(".contact-info");
-      if (contactInfo) {
-        gsap.fromTo(
-          contactInfo,
-          { opacity: 0, x: 50 },
-          {
-            opacity: 1,
-            x: 0,
-            duration: 1,
-            scrollTrigger: {
-              trigger: contactInfo,
-              start: "top 80%",
-              end: "bottom 20%",
-              toggleActions: "play none none reverse",
-            },
-          }
-        );
-      }
+      // Cleanup function
+      return () => ctx.revert();
     }
   }, []);
 

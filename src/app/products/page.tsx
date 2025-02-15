@@ -175,6 +175,7 @@ function Products() {
 
   // Set body overflow to prevent horizontal scroll
   useEffect(() => {
+    // Check if we're in the browser environment
     if (typeof window !== "undefined") {
       document.body.style.overflowX = "hidden";
       return () => {
@@ -667,7 +668,16 @@ function Products() {
 }
 
 export default function ProductsPage() {
-  <Suspense fallback={<div>Loading...</div>}>
-    <Products />
-  </Suspense>;
+  // Check if we're in the browser environment
+  const isBrowser = typeof window !== "undefined";
+
+  if (!isBrowser) {
+    return null; // Return null during server-side rendering
+  }
+
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <Products />
+    </Suspense>
+  );
 }

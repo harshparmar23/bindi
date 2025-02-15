@@ -13,6 +13,7 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [delayedOpen, setDelayedOpen] = useState(false);
+  const [isMounted, setIsMounted] = useState(false);
 
   const waveRef = useRef<HTMLDivElement>(null);
   const componentRef = useRef<HTMLDivElement>(null);
@@ -22,62 +23,60 @@ const Navbar = () => {
   const userId = (session?.user as { id: string })?.id;
   const pathname = usePathname();
 
-  // ... (other state and refs)
+  // Set mounted state when component mounts
+  useEffect(() => {
+    setIsMounted(true);
+  }, []);
 
-  // Update date and time
-
-  // Handle link clicks to close menu
   const handleLinkClick = () => {
     setIsMenuOpen(false);
   };
 
+  // Modified hover effect useEffect
   useEffect(() => {
-    // Select all tab elements
-    if (typeof window !== "undefined") {
-      const tabs = document.querySelectorAll(".tabs");
+    if (!isMounted) return;
 
-      // Event handlers for hover
-      const handleMouseEnter = (e: Event) => {
-        const tab = e.currentTarget as HTMLElement;
-        gsap.to(tab, {
-          x: 20,
-          duration: 0.3,
-          ease: "power2.out",
-        });
-      };
+    const tabs = document.querySelectorAll(".tabs");
 
-      const handleMouseLeave = (e: Event) => {
-        const tab = e.currentTarget as HTMLElement;
-        gsap.to(tab, {
-          x: 0,
-          duration: 0.3,
-          ease: "power2.out",
-        });
-      };
-
-      // Add event listeners to each tab
-      tabs.forEach((tab) => {
-        tab.addEventListener("mouseenter", handleMouseEnter);
-        tab.addEventListener("mouseleave", handleMouseLeave);
+    const handleMouseEnter = (e: Event) => {
+      const tab = e.currentTarget as HTMLElement;
+      gsap.to(tab, {
+        x: 20,
+        duration: 0.3,
+        ease: "power2.out",
       });
+    };
 
-      // Cleanup function
-      return () => {
-        tabs.forEach((tab) => {
-          tab.removeEventListener("mouseenter", handleMouseEnter);
-          tab.removeEventListener("mouseleave", handleMouseLeave);
-        });
-      };
-    }
-  }, [isMenuOpen]); // Re-run when menu opens/closes
+    const handleMouseLeave = (e: Event) => {
+      const tab = e.currentTarget as HTMLElement;
+      gsap.to(tab, {
+        x: 0,
+        duration: 0.3,
+        ease: "power2.out",
+      });
+    };
 
+    tabs.forEach((tab) => {
+      tab.addEventListener("mouseenter", handleMouseEnter);
+      tab.addEventListener("mouseleave", handleMouseLeave);
+    });
+
+    return () => {
+      tabs.forEach((tab) => {
+        tab.removeEventListener("mouseenter", handleMouseEnter);
+        tab.removeEventListener("mouseleave", handleMouseLeave);
+      });
+    };
+  }, [isMenuOpen, isMounted]);
+
+  // Modified GSAP animation useEffect
   useEffect(() => {
-    // Initial GSAP setup
+    if (!isMounted) return;
+
     if (componentRef.current) {
       gsap.set(componentRef.current, { opacity: 0 });
     }
 
-    // Set initial state for tabs
     gsap.set(".tabs", {
       opacity: 0,
       y: 20,
@@ -88,8 +87,8 @@ const Navbar = () => {
 
       tl.to(componentRef.current, {
         opacity: 1,
-        duration: 1,
-        delay: 0.2,
+        duration: 2,
+        delay: 0.4,
       }).to(
         ".tabs",
         {
@@ -99,84 +98,40 @@ const Navbar = () => {
           stagger: 0.1,
           ease: "power2.out",
         },
-        "-=0.5"
+        "<"
       );
     }
-  }, [isMenuOpen]);
-
-  // Initialize GSAP states and handle animations
-  useEffect(() => {
-    // Initial GSAP setup
-    if (componentRef.current) {
-      gsap.set(componentRef.current, { opacity: 0 });
-    }
-
-    // Set initial state for tabs
-    gsap.set(".tabs", {
-      opacity: 0,
-      y: 20, // Start from below their final position
-    });
-
-    // Update animation when menu opens
-    if (isMenuOpen && componentRef.current) {
-      const tl = gsap.timeline();
-
-      // Animate the component first
-      tl.to(
-        componentRef.current,
-        {
-          opacity: 1,
-          duration: 2,
-          delay: 0.4,
-        },
-        "<"
-      )
-
-        // Animate tabs with stagger
-        .to(
-          ".tabs",
-          {
-            opacity: 1,
-            y: 0, // Move to their original position
-            duration: 0.5,
-            stagger: 0.1, // 0.1 second delay between each tab
-            ease: "power2.out",
-            delay: 0, // Smooth easing function
-          },
-          "<"
-        ); // Start slightly before the previous animation ends
-    }
-  }, [isMenuOpen]);
+  }, [isMenuOpen, isMounted]);
 
   // Handle delayed open state
   useEffect(() => {
     setDelayedOpen(isMenuOpen);
   }, [isMenuOpen]);
 
-  // Responsive circle count
+  // Responsive circle count with client-side check
   const [circleCount, setCircleCount] = useState(9);
   const [circleWidth, setCircleWidth] = useState("15%");
 
   useEffect(() => {
-    if (typeof window !== "undefined") {
-      const updateCircleCount = () => {
-        if (window.innerWidth < 700) {
-          setCircleCount(4);
-          setCircleWidth("20%");
-        } else if (window.innerWidth < 1000) {
-          setCircleCount(6);
-          setCircleWidth("15%");
-        } else {
-          setCircleCount(9);
-          setCircleWidth("15%");
-        }
-      };
+    if (!isMounted) return;
 
-      updateCircleCount();
-      window.addEventListener("resize", updateCircleCount);
-      return () => window.removeEventListener("resize", updateCircleCount);
-    }
-  }, []);
+    const updateCircleCount = () => {
+      if (window.innerWidth < 700) {
+        setCircleCount(4);
+        setCircleWidth("20%");
+      } else if (window.innerWidth < 1000) {
+        setCircleCount(6);
+        setCircleWidth("15%");
+      } else {
+        setCircleCount(9);
+        setCircleWidth("15%");
+      }
+    };
+
+    updateCircleCount();
+    window.addEventListener("resize", updateCircleCount);
+    return () => window.removeEventListener("resize", updateCircleCount);
+  }, [isMounted]);
 
   const menuItems = [
     { href: "/user", text: "PROFILE" },
@@ -184,7 +139,6 @@ const Navbar = () => {
     { href: "/user?tab=cart", text: "CART" },
     { href: "/aboutUs", text: "ABOUT US" },
   ];
-
   return (
     <>
       {/* Main Navbar */}
