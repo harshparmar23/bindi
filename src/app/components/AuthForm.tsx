@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
 
 // Define TypeScript interfaces
 interface AuthInputProps {
@@ -17,13 +17,15 @@ const AuthForm = () => {
   const [isMobile, setIsMobile] = useState(false);
 
   useEffect(() => {
-    const handleResize = () => {
-      setIsMobile(window.innerWidth <= 768);
-    };
+    if (typeof window !== "undefined") {
+      const handleResize = () => {
+        setIsMobile(window.innerWidth <= 768);
+      };
 
-    handleResize();
-    window.addEventListener('resize', handleResize);
-    return () => window.removeEventListener('resize', handleResize);
+      handleResize();
+      window.addEventListener("resize", handleResize);
+      return () => window.removeEventListener("resize", handleResize);
+    }
   }, []);
 
   const updateMobileButtons = (isSignUp: boolean): void => {
@@ -34,16 +36,30 @@ const AuthForm = () => {
     <>
       {/* Use Next.js recommended way to import fonts */}
       <div className="flex justify-center items-center min-h-screen p-5 bg-gray-900 text-gray-100">
-        <div className={`relative overflow-hidden w-full max-w-[800px] min-h-[550px] md:min-h-[550px] bg-gray-800 rounded-2xl shadow-2xl border border-cyan-300/20 ${isRightPanelActive ? 'right-panel-active' : ''}`}>
+        <div
+          className={`relative overflow-hidden w-full max-w-[800px] min-h-[550px] md:min-h-[550px] bg-gray-800 rounded-2xl shadow-2xl border border-cyan-300/20 ${
+            isRightPanelActive ? "right-panel-active" : ""
+          }`}
+        >
           {/* Sign Up Container */}
-          <div className={`absolute top-0 h-full transition-all duration-1000 ease-in-out 
-            ${isMobile ? 'w-full' : 'w-1/2'} 
-            ${isRightPanelActive ? 
-              (isMobile ? 'translate-y-0' : 'translate-x-0 left-1/2') : 
-              (isMobile ? 'translate-y-full' : 'translate-x-0 left-0')}
-            ${!isMobile && 'z-20'}`}>
+          <div
+            className={`absolute top-0 h-full transition-all duration-1000 ease-in-out 
+            ${isMobile ? "w-full" : "w-1/2"} 
+            ${
+              isRightPanelActive
+                ? isMobile
+                  ? "translate-y-0"
+                  : "translate-x-0 left-1/2"
+                : isMobile
+                ? "translate-y-full"
+                : "translate-x-0 left-0"
+            }
+            ${!isMobile && "z-20"}`}
+          >
             <form className="flex flex-col items-center justify-center h-full px-12 text-center bg-gray-800">
-              <h1 className="mb-5 text-3xl font-bold text-cyan-300">Create Account</h1>
+              <h1 className="mb-5 text-3xl font-bold text-cyan-300">
+                Create Account
+              </h1>
               <AuthInput type="text" placeholder="Full Name" />
               <AuthInput type="email" placeholder="Institute Email" />
               <AuthInput type="text" placeholder="College Name" />
@@ -55,17 +71,28 @@ const AuthForm = () => {
           </div>
 
           {/* Sign In Container */}
-          <div className={`absolute top-0 h-full transition-all duration-1000 ease-in-out 
-            ${isMobile ? 'w-full' : 'w-1/2'} 
-            ${isRightPanelActive ? 
-              (isMobile ? 'translate-y-[-100%]' : 'translate-x-0 left-0') : 
-              (isMobile ? 'translate-y-0' : 'translate-x-0 left-0')}
-            ${!isMobile && 'z-20'}`}>
+          <div
+            className={`absolute top-0 h-full transition-all duration-1000 ease-in-out 
+            ${isMobile ? "w-full" : "w-1/2"} 
+            ${
+              isRightPanelActive
+                ? isMobile
+                  ? "translate-y-[-100%]"
+                  : "translate-x-0 left-0"
+                : isMobile
+                ? "translate-y-0"
+                : "translate-x-0 left-0"
+            }
+            ${!isMobile && "z-20"}`}
+          >
             <form className="flex flex-col items-center justify-center h-full px-12 text-center bg-gray-800">
               <h1 className="mb-5 text-3xl font-bold text-cyan-300">Sign In</h1>
               <AuthInput type="email" placeholder="Email" />
               <AuthInput type="password" placeholder="Password" />
-              <a href="#" className="my-4 text-sm text-gray-400 hover:text-cyan-300 transition-colors">
+              <a
+                href="#"
+                className="my-4 text-sm text-gray-400 hover:text-cyan-300 transition-colors"
+              >
                 Forgot your password?
               </a>
               <AuthButton>Sign In</AuthButton>
@@ -74,14 +101,23 @@ const AuthForm = () => {
 
           {/* Overlay Container */}
           {!isMobile && (
-            <div className={`absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-1000 ease-in-out z-30
-              ${isRightPanelActive ? '-translate-x-full' : ''}`}>
-              <div className={`relative h-full w-[200%] -left-full transform transition-transform duration-1000 ease-in-out
-                ${isRightPanelActive ? 'translate-x-1/2' : 'translate-x-0'}`}>
+            <div
+              className={`absolute top-0 left-1/2 w-1/2 h-full overflow-hidden transition-transform duration-1000 ease-in-out z-30
+              ${isRightPanelActive ? "-translate-x-full" : ""}`}
+            >
+              <div
+                className={`relative h-full w-[200%] -left-full transform transition-transform duration-1000 ease-in-out
+                ${isRightPanelActive ? "translate-x-1/2" : "translate-x-0"}`}
+              >
                 <div className="absolute flex flex-col items-center justify-center w-1/2 h-full px-10 text-center text-white bg-gradient-to-br from-cyan-400 to-cyan-600 rounded-r-[100px]">
-                  <h1 className="mb-5 text-3xl font-bold text-gray-800">Welcome Back!</h1>
-                  <p className="mb-8 text-sm text-gray-800 font-bold">To keep connected with us please login with your personal info</p>
-                  <button 
+                  <h1 className="mb-5 text-3xl font-bold text-gray-800">
+                    Welcome Back!
+                  </h1>
+                  <p className="mb-8 text-sm text-gray-800 font-bold">
+                    To keep connected with us please login with your personal
+                    info
+                  </p>
+                  <button
                     onClick={() => setIsRightPanelActive(false)}
                     className="px-12 py-3 text-sm font-bold tracking-wider uppercase border-2 border-gray-800 bg-gray-800 text-cyan-300 rounded-full transition-all hover:bg-gray-900 hover:scale-105"
                   >
@@ -89,9 +125,13 @@ const AuthForm = () => {
                   </button>
                 </div>
                 <div className="absolute right-0 flex flex-col items-center justify-center w-1/2 h-full px-10 text-center text-white bg-gradient-to-bl from-cyan-400 to-cyan-600 rounded-l-[100px]">
-                  <h1 className="mb-5 text-3xl font-bold text-gray-800">Hello, Friend!</h1>
-                  <p className="mb-8 text-sm text-gray-800 font-bold">Enter your personal details and start journey with us</p>
-                  <button 
+                  <h1 className="mb-5 text-3xl font-bold text-gray-800">
+                    Hello, Friend!
+                  </h1>
+                  <p className="mb-8 text-sm text-gray-800 font-bold">
+                    Enter your personal details and start journey with us
+                  </p>
+                  <button
                     onClick={() => setIsRightPanelActive(true)}
                     className="px-12 py-3 text-sm font-bold tracking-wider uppercase border-2 border-gray-800 bg-gray-800 text-cyan-300 rounded-full transition-all hover:bg-gray-900 hover:scale-105"
                   >
@@ -109,18 +149,22 @@ const AuthForm = () => {
             <button
               onClick={() => updateMobileButtons(false)}
               className={`px-8 py-2.5 text-sm font-bold rounded-full border-2 transition-all duration-1000
-                ${!isRightPanelActive 
-                  ? 'bg-gray-800 text-cyan-300 border-gray-800' 
-                  : 'bg-transparent border-gray-800 text-gray-800'}`}
+                ${
+                  !isRightPanelActive
+                    ? "bg-gray-800 text-cyan-300 border-gray-800"
+                    : "bg-transparent border-gray-800 text-gray-800"
+                }`}
             >
               Sign In
             </button>
             <button
               onClick={() => updateMobileButtons(true)}
               className={`px-8 py-2.5 text-sm font-bold rounded-full border-2 transition-all duration-1000
-                ${isRightPanelActive 
-                  ? 'bg-gray-800 text-cyan-300 border-gray-800' 
-                  : 'bg-transparent border-gray-800 text-gray-800'}`}
+                ${
+                  isRightPanelActive
+                    ? "bg-gray-800 text-cyan-300 border-gray-800"
+                    : "bg-transparent border-gray-800 text-gray-800"
+                }`}
             >
               Sign Up
             </button>

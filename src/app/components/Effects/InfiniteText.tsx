@@ -32,9 +32,8 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
   });
 
   useEffect(() => {
+    gsap.registerPlugin(ScrollTrigger);
     if (typeof window !== "undefined") {
-      gsap.registerPlugin(ScrollTrigger);
-
       if (slider.current) {
         gsap.to(slider.current, {
           scrollTrigger: {

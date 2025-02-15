@@ -30,9 +30,11 @@ const UserPage = () => {
 
   useEffect(() => {
     if (status === "unauthenticated") {
-      router.push(
-        `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
-      );
+      if (typeof window !== "undefined") {
+        router.push(
+          `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
+        );
+      }
     }
   }, [status, router]);
 

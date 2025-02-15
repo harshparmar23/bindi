@@ -158,22 +158,24 @@ const Navbar = () => {
   const [circleWidth, setCircleWidth] = useState("15%");
 
   useEffect(() => {
-    const updateCircleCount = () => {
-      if (window.innerWidth < 700) {
-        setCircleCount(4);
-        setCircleWidth("20%");
-      } else if (window.innerWidth < 1000) {
-        setCircleCount(6);
-        setCircleWidth("15%");
-      } else {
-        setCircleCount(9);
-        setCircleWidth("15%");
-      }
-    };
+    if (typeof window !== "undefined") {
+      const updateCircleCount = () => {
+        if (window.innerWidth < 700) {
+          setCircleCount(4);
+          setCircleWidth("20%");
+        } else if (window.innerWidth < 1000) {
+          setCircleCount(6);
+          setCircleWidth("15%");
+        } else {
+          setCircleCount(9);
+          setCircleWidth("15%");
+        }
+      };
 
-    updateCircleCount();
-    window.addEventListener("resize", updateCircleCount);
-    return () => window.removeEventListener("resize", updateCircleCount);
+      updateCircleCount();
+      window.addEventListener("resize", updateCircleCount);
+      return () => window.removeEventListener("resize", updateCircleCount);
+    }
   }, []);
 
   const menuItems = [

@@ -122,10 +122,11 @@ function Products() {
   }
 
   async function handleDelete(id: string) {
-    if (!window.confirm("Are you sure you want to delete this product?")) {
-      return;
+    if (typeof window !== "undefined") {
+      if (!window.confirm("Are you sure you want to delete this product?")) {
+        return;
+      }
     }
-
     try {
       const response = await fetch(`/api/admin/products?id=${id}`, {
         method: "DELETE",

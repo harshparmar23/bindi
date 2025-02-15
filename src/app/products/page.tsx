@@ -186,44 +186,45 @@ function Products() {
   // Add to cart function
   const addToCart = async (productId: string) => {
     setUpdatingCart(productId);
+    if (typeof window !== "undefined") {
+      try {
+        const userId = (session?.user as { id: string })?.id;
+        if (!userId) {
+          router.push(
+            `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
+          );
+          return;
+        }
 
-    try {
-      const userId = (session?.user as { id: string })?.id;
-      if (!userId) {
-        router.push(
-          `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
-        );
-        return;
+        const response = await fetch("/api/cart", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({
+            userId,
+            productId,
+            quantity: 1,
+            action: "increase",
+          }),
+        });
+
+        if (!response.ok) {
+          throw new Error("Failed to add to cart");
+        }
+
+        setCartQuantities((prev) => ({
+          ...prev,
+          [productId]: 1,
+        }));
+
+        toast.success("Added to cart!");
+      } catch (err) {
+        toast.error("Failed to add to cart");
+        console.error("Error adding to cart:", err);
+      } finally {
+        setUpdatingCart(null);
       }
-
-      const response = await fetch("/api/cart", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          userId,
-          productId,
-          quantity: 1,
-          action: "increase",
-        }),
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to add to cart");
-      }
-
-      setCartQuantities((prev) => ({
-        ...prev,
-        [productId]: 1,
-      }));
-
-      toast.success("Added to cart!");
-    } catch (err) {
-      toast.error("Failed to add to cart");
-      console.error("Error adding to cart:", err);
-    } finally {
-      setUpdatingCart(null);
     }
   };
 
@@ -234,14 +235,14 @@ function Products() {
 
     try {
       const userId = (session?.user as { id: string })?.id;
-
-      if (!userId) {
-        router.push(
-          `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
-        );
-        return;
+      if (typeof window !== "undefined") {
+        if (!userId) {
+          router.push(
+            `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
+          );
+          return;
+        }
       }
-
       const response = await fetch("/api/cart", {
         method: "POST",
         headers: {
