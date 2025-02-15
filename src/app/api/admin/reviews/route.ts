@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import connectDB from "@/lib/connectDB";
-import Review from "@/models/Review";
+import { authOptions } from "@/app/lib/auth";
+import connectDB from "@/app/lib/connectDB";
+import Review from "@/app/models/Review";
 
 // GET - Retrieve all reviews (Admin only)
 export async function GET() {
@@ -31,7 +31,7 @@ export async function POST(request: Request) {
     // Parse the incoming JSON body
     const body = await request.json();
     const { userName, phone, email, comment } = body;
-    
+
     // Validate required fields
     if (!userName || !phone || !email || !comment) {
       return NextResponse.json(
@@ -39,7 +39,7 @@ export async function POST(request: Request) {
         { status: 400 }
       );
     }
-    
+
     // Create new review, default isApproved will be false as per schema
     const review = await Review.create({ userName, phone, email, comment });
 
@@ -83,10 +83,7 @@ export async function PUT(request: Request) {
       { new: true, runValidators: true }
     );
     if (!updatedReview) {
-      return NextResponse.json(
-        { error: "Review not found" },
-        { status: 404 }
-      );
+      return NextResponse.json({ error: "Review not found" }, { status: 404 });
     }
     return NextResponse.json(updatedReview);
   } catch (error) {

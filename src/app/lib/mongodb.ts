@@ -1,5 +1,5 @@
 import { MongoClient, MongoClientOptions } from "mongodb";
-import type { GlobalWithMongoDB } from "@/types/mongoClientTypes";
+import type { GlobalWithMongoDB } from "@/app/types/mongoClientTypes";
 
 if (!process.env.MONGODB_URI) {
   throw new Error(

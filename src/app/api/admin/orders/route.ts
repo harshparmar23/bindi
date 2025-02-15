@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import connectDB from "@/lib/connectDB";
-import Order from "@/models/Order";
+import { authOptions } from "@/app/lib/auth";
+import connectDB from "@/app/lib/connectDB";
+import Order from "@/app/models/Order";
 // import Product from "@/models/Product"; // Import Product so its schema is registered
 
 export async function GET() {
@@ -17,11 +17,14 @@ export async function GET() {
       .populate({ path: "user", select: "name email phone" })
       .populate({ path: "products.product", select: "name category" })
       .sort({ createdAt: -1 });
-      
+
     return NextResponse.json(orders);
   } catch (error) {
     console.error("Error fetching orders:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }
 
@@ -35,7 +38,10 @@ export async function PUT(request: Request) {
     const { searchParams } = new URL(request.url);
     const orderId = searchParams.get("orderId");
     if (!orderId) {
-      return NextResponse.json({ error: "Order ID is required" }, { status: 400 });
+      return NextResponse.json(
+        { error: "Order ID is required" },
+        { status: 400 }
+      );
     }
     const body = await request.json();
     const validStatuses = ["pending", "shipped", "delivered", "cancelled"];
@@ -53,6 +59,9 @@ export async function PUT(request: Request) {
     return NextResponse.json(updatedOrder);
   } catch (error) {
     console.error("Error updating order status:", error);
-    return NextResponse.json({ error: "Internal server error" }, { status: 500 });
+    return NextResponse.json(
+      { error: "Internal server error" },
+      { status: 500 }
+    );
   }
 }

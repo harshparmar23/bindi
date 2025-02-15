@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import bcrypt from "bcryptjs";
-import User from "@/models/User"; // Your Mongoose User model
-import connectDB from "@/lib/connectDB";
+import User from "@/app/models/User"; // Your Mongoose User model
+import connectDB from "@/app/lib/connectDB";
 
 const isStrongPassword = (password: string) => {
   return (

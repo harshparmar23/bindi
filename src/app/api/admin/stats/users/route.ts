@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import User from "@/models/User";
-import connectDB from "@/lib/connectDB";
+import User from "@/app/models/User";
+import connectDB from "@/app/lib/connectDB";
 import { getSession } from "next-auth/react";
 
 export async function GET() {

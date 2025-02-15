@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
-import CartItem from "@/components/CartItem";
+import CartItem from "@/app/components/CartItem";
 import WhatsAppQR from "./WhatsAppQR";
 import UPIQrCode from "./UPIQrCode";
 

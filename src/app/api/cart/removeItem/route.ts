@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
-import Cart from "@/models/Cart";
+import Cart from "@/app/models/Cart";
 import { Types } from "mongoose";
-import connectDB from "@/lib/connectDB";
+import connectDB from "@/app/lib/connectDB";
 
 export async function DELETE(req: Request) {
   await connectDB();

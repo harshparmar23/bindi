@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/lib/auth";
-import connectDB from "@/lib/connectDB";
-import Category from "@/models/Category";
+import { authOptions } from "@/app/lib/auth";
+import connectDB from "@/app/lib/connectDB";
+import Category from "@/app/models/Category";
 
 // GET - Retrieve all categories (Admin only)
 export async function GET() {

@@ -1,6 +1,6 @@
 "use client";
 import { useState, useEffect, Suspense } from "react";
-import { Switch } from "@/components/ui/switch";
+import { Switch } from "@/app/components/ui/switch";
 import {
   Table,
   TableBody,
@@ -8,8 +8,8 @@ import {
   TableHead,
   TableHeader,
   TableRow,
-} from "@/components/ui/table";
-import { useToast } from "@/hooks/use-toast";
+} from "@/app/components/ui/table";
+import { useToast } from "@/app/hooks/use-toast";
 
 interface Review {
   _id: string;

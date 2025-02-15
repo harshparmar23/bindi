@@ -6,9 +6,9 @@ import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import bcrypt from "bcryptjs";
 import { MongoDBAdapter } from "@next-auth/mongodb-adapter";
-import clientPromise from "@/lib/mongodb";
-import User from "@/models/User";
-import connectDB from "@/lib/connectDB";
+import clientPromise from "@/app/lib/mongodb";
+import User from "@/app/models/User";
+import connectDB from "@/app/lib/connectDB";
 
 // Define database user type
 interface DatabaseUser {
@@ -42,9 +42,9 @@ export const authOptions: AuthOptions = {
         await connectDB();
         const { identifier, password } = credentials;
 
-        const user = await User.findOne({
+        const user = (await User.findOne({
           $or: [{ email: identifier }, { phone: identifier }],
-        }).select("+password") as DatabaseUser | null;
+        }).select("+password")) as DatabaseUser | null;
 
         if (!user) throw new Error("User not found");
         if (!user.password) throw new Error("Invalid login method");
@@ -57,7 +57,7 @@ export const authOptions: AuthOptions = {
           name: user.name,
           email: user.email,
           role: user.role,
-          provider: "credentials"
+          provider: "credentials",
         };
       },
     }),
@@ -87,7 +87,7 @@ export const authOptions: AuthOptions = {
 
         // Fetch latest user data
         await connectDB();
-        const dbUser = await User.findById(token.id) as DatabaseUser | null;
+        const dbUser = (await User.findById(token.id)) as DatabaseUser | null;
         if (dbUser) {
           session.user.role = dbUser.role;
         }
@@ -117,11 +117,11 @@ export const authOptions: AuthOptions = {
       return true;
     },
     async redirect({ url, baseUrl }) {
-      return url.startsWith("/") 
-        ? `${baseUrl}${url}` 
-        : new URL(url).origin === baseUrl 
-          ? url 
-          : baseUrl;
+      return url.startsWith("/")
+        ? `${baseUrl}${url}`
+        : new URL(url).origin === baseUrl
+        ? url
+        : baseUrl;
     },
   },
   pages: {

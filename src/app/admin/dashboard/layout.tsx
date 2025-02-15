@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { cn } from "@/lib/utils";
-import { Button } from "@/components/ui/button";
-import { ScrollArea } from "@/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
-import { Separator } from "@/components/ui/separator";
+import { cn } from "@/app/lib/utils";
+import { Button } from "@/app/components/ui/button";
+import { ScrollArea } from "@/app/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
+import { Separator } from "@/app/components/ui/separator";
 import {
   LayoutDashboard,
   Package,

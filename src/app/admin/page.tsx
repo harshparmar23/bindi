@@ -1,7 +1,7 @@
 "use client";
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Tabs, TabsList, TabsTrigger } from "@/app/components/ui/tabs";
 // import { Card, CardContent } from "@/components/ui/card";
 // import Products from './components/Products';
 // import Categories from './components/Categories';

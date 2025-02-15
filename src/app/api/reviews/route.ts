@@ -1,6 +1,6 @@
 import { NextResponse } from "next/server";
-import Review from "@/models/Review";
-import connectDB from "@/lib/connectDB";
+import Review from "@/app/models/Review";
+import connectDB from "@/app/lib/connectDB";
 
 export async function GET() {
   try {

@@ -2,8 +2,8 @@
 
 import { Suspense, useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useDebounce } from "@/hooks/useDebounce";
-import ProductCard from "../../components/ProductCard";
+import { useDebounce } from "@/app/hooks/useDebounce";
+import ProductCard from "../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus, Search, ChevronRight, Filter } from "lucide-react";
 import { useSession } from "next-auth/react";

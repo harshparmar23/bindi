@@ -9,7 +9,7 @@ import Link from "next/link";
 
 import { Phone, Mail, MapPin } from "lucide-react";
 import { Banknote, Award } from "lucide-react";
-import UserReviewForm from "@/components/UserReviewForm";
+import UserReviewForm from "@/app/components/UserReviewForm";
 
 export default function About() {
   const promises = [

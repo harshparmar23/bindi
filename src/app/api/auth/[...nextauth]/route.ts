@@ -1,2 +1,2 @@
-import { authHandler } from "@/lib/auth";
+import { authHandler } from "@/app/lib/auth";
 export { authHandler as GET, authHandler as POST };

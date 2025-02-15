@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
 import { User, KeyRound, Phone, MapPin, Mail } from "lucide-react";
 
 interface UserData {

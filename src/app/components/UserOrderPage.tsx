@@ -1,6 +1,6 @@
 import { useEffect, useState, useCallback } from "react";
-import { Badge } from "@/components/ui/badge";
-import { Card, CardHeader, CardContent } from "@/components/ui/card";
+import { Badge } from "@/app/components/ui/badge";
+import { Card, CardHeader, CardContent } from "@/app/components/ui/card";
 import { Clock, Package, CreditCard, AlertCircle } from "lucide-react";
 
 interface Product {

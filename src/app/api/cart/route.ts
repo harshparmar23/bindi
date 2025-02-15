@@ -1,8 +1,8 @@
 import { NextResponse } from "next/server";
-import Cart from "@/models/Cart";
-import Product from "@/models/Product";
+import Cart from "@/app/models/Cart";
+import Product from "@/app/models/Product";
 import { Types } from "mongoose";
-import connectDB from "@/lib/connectDB";
+import connectDB from "@/app/lib/connectDB";
 
 interface ProductCategory {
   _id: Types.ObjectId;

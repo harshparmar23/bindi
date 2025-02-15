@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from "next/server";
-import Order from "@/models/Order";
-import connectDB from "@/lib/connectDB";
+import Order from "@/app/models/Order";
+import connectDB from "@/app/lib/connectDB";
 import { Types } from "mongoose";
 
 interface Product {

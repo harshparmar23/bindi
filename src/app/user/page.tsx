@@ -1,9 +1,9 @@
 "use client";
 
-import UserpageDetails from "@/components/UserDetailsPage";
-import OrdersPage from "@/components/UserOrderPage";
-import CartPage from "@/components/UserCartPage";
-import HomeTab from "@/components/Hometab";
+import UserpageDetails from "@/app/components/UserDetailsPage";
+import OrdersPage from "@/app/components/UserOrderPage";
+import CartPage from "@/app/components/UserCartPage";
+import HomeTab from "@/app/components/Hometab";
 import { useState, useEffect, Suspense } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
