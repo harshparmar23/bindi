@@ -1,3 +1,4 @@
+"use client";
 import InfiniteText from "./Effects/InfiniteText";
 
 export function InfiniteName() {
