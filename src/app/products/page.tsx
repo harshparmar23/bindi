@@ -178,9 +178,9 @@ function Products() {
     if (process.env.NEXT_PUBLIC_IGNORE_DOCUMENT !== "true") {
       // Check if we're in the browser environment
       if (typeof window !== "undefined") {
-        document.body.style.overflowX = "hidden";
+        globalThis.document.body.style.overflowX = "hidden";
         return () => {
-          document.body.style.overflowX = "auto";
+          globalThis.document.body.style.overflowX = "auto";
         };
       }
     }

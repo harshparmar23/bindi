@@ -14,6 +14,13 @@ const nextConfig: NextConfig = {
       },
     ],
   },
+  reactStrictMode: true,
+  webpack: (config, { isServer }) => {
+    if (isServer) {
+      config.resolve.fallback = { fs: false }; // Prevents server-side crashes
+    }
+    return config;
+  },
 };
 
 export default nextConfig;

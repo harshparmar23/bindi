@@ -41,7 +41,7 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
         if (slider.current && window) {
           gsap.to(slider.current, {
             scrollTrigger: {
-              trigger: window.document.documentElement,
+              trigger: window.globalThis.document.documentElement,
               start: 0,
               scrub: 0.35,
               onUpdate: (e) => (directionRef.current = e.direction * -1),

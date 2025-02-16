@@ -13,8 +13,10 @@ interface Review {
   isApproved: boolean; // Added to filter approved reviews
 }
 
-const generateAlternatingOffsets = (count: number) => {
-  const offsets = [];
+const generateAlternatingOffsets = (
+  count: number
+): Array<{ translateY: number }> => {
+  const offsets: Array<{ translateY: number }> = [];
   let previousWasUp = false;
 
   for (let i = 0; i < count; i++) {
@@ -60,7 +62,10 @@ const CustomerReviews = () => {
     fetchReviews();
   }, []);
 
-  const handleDrag = (event: MouseEvent | TouchEvent, info: { delta: { x: number } }) => {
+  const handleDrag = (
+    event: MouseEvent | TouchEvent,
+    info: { delta: { x: number } }
+  ) => {
     if (!containerRef.current) return;
 
     const containerWidth = containerRef.current.scrollWidth / 3;

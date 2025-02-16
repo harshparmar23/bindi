@@ -36,7 +36,7 @@ const Navbar = () => {
   useEffect(() => {
     if (!isMounted) return;
     if (process.env.NEXT_PUBLIC_IGNORE_DOCUMENT !== "true") {
-      const tabs = document.querySelectorAll(".tabs");
+      const tabs = globalThis.document.querySelectorAll(".tabs");
 
       const handleMouseEnter = (e: Event) => {
         const tab = e.currentTarget as HTMLElement;
