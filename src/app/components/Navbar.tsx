@@ -35,38 +35,39 @@ const Navbar = () => {
   // Modified hover effect useEffect
   useEffect(() => {
     if (!isMounted) return;
+    if (process.env.NEXT_PUBLIC_IGNORE_DOCUMENT !== "true") {
+      const tabs = document.querySelectorAll(".tabs");
 
-    const tabs = document.querySelectorAll(".tabs");
+      const handleMouseEnter = (e: Event) => {
+        const tab = e.currentTarget as HTMLElement;
+        gsap.to(tab, {
+          x: 20,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      };
 
-    const handleMouseEnter = (e: Event) => {
-      const tab = e.currentTarget as HTMLElement;
-      gsap.to(tab, {
-        x: 20,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-    };
+      const handleMouseLeave = (e: Event) => {
+        const tab = e.currentTarget as HTMLElement;
+        gsap.to(tab, {
+          x: 0,
+          duration: 0.3,
+          ease: "power2.out",
+        });
+      };
 
-    const handleMouseLeave = (e: Event) => {
-      const tab = e.currentTarget as HTMLElement;
-      gsap.to(tab, {
-        x: 0,
-        duration: 0.3,
-        ease: "power2.out",
-      });
-    };
-
-    tabs.forEach((tab) => {
-      tab.addEventListener("mouseenter", handleMouseEnter);
-      tab.addEventListener("mouseleave", handleMouseLeave);
-    });
-
-    return () => {
       tabs.forEach((tab) => {
-        tab.removeEventListener("mouseenter", handleMouseEnter);
-        tab.removeEventListener("mouseleave", handleMouseLeave);
+        tab.addEventListener("mouseenter", handleMouseEnter);
+        tab.addEventListener("mouseleave", handleMouseLeave);
       });
-    };
+
+      return () => {
+        tabs.forEach((tab) => {
+          tab.removeEventListener("mouseenter", handleMouseEnter);
+          tab.removeEventListener("mouseleave", handleMouseLeave);
+        });
+      };
+    }
   }, [isMenuOpen, isMounted]);
 
   // Modified GSAP animation useEffect

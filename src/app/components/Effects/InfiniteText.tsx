@@ -36,27 +36,28 @@ const InfiniteText: FC<Props> = ({ text, speed = 0.1 }) => {
     gsap.registerPlugin(ScrollTrigger);
 
     // Initialize animation only on client side
-    const initAnimation = () => {
-      if (slider.current && window) {
-        gsap.to(slider.current, {
-          scrollTrigger: {
-            trigger: window.document.documentElement,
-            start: 0,
-            scrub: 0.35,
-            onUpdate: (e) => (directionRef.current = e.direction * -1),
-          },
-          x: "-=300px",
-        });
+    if (process.env.NEXT_PUBLIC_IGNORE_DOCUMENT !== "true") {
+      const initAnimation = () => {
+        if (slider.current && window) {
+          gsap.to(slider.current, {
+            scrollTrigger: {
+              trigger: window.document.documentElement,
+              start: 0,
+              scrub: 0.35,
+              onUpdate: (e) => (directionRef.current = e.direction * -1),
+            },
+            x: "-=300px",
+          });
+        }
+
+        requestAnimationFrame(animate);
+      };
+
+      // Ensure we're in the browser environment
+      if (typeof window !== "undefined") {
+        initAnimation();
       }
-
-      requestAnimationFrame(animate);
-    };
-
-    // Ensure we're in the browser environment
-    if (typeof window !== "undefined") {
-      initAnimation();
     }
-
     // Cleanup
     return () => {
       if (typeof window !== "undefined") {

@@ -175,12 +175,14 @@ function Products() {
 
   // Set body overflow to prevent horizontal scroll
   useEffect(() => {
-    // Check if we're in the browser environment
-    if (typeof window !== "undefined") {
-      document.body.style.overflowX = "hidden";
-      return () => {
-        document.body.style.overflowX = "auto";
-      };
+    if (process.env.NEXT_PUBLIC_IGNORE_DOCUMENT !== "true") {
+      // Check if we're in the browser environment
+      if (typeof window !== "undefined") {
+        document.body.style.overflowX = "hidden";
+        return () => {
+          document.body.style.overflowX = "auto";
+        };
+      }
     }
   }, []);
 
