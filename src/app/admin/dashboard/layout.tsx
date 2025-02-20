@@ -2,11 +2,11 @@
 import { useState, useEffect } from "react";
 import { useRouter, usePathname } from "next/navigation";
 import Link from "next/link";
-import { cn } from "@/app/lib/utils";
-import { Button } from "@/app/components/ui/button";
-import { ScrollArea } from "@/app/components/ui/scroll-area";
-import { Sheet, SheetContent, SheetTrigger } from "@/app/components/ui/sheet";
-import { Separator } from "@/app/components/ui/separator";
+import { cn } from "@/lib/utils";
+import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
+import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
+import { Separator } from "@/components/ui/separator";
 import {
   LayoutDashboard,
   Package,
@@ -15,6 +15,7 @@ import {
   Star,
   Menu,
   FolderTree,
+  LogOut,
 } from "lucide-react";
 
 interface SidebarProps extends React.HTMLAttributes<HTMLDivElement> {
@@ -78,6 +79,7 @@ export default function DashboardLayout({
 
 function Sidebar({ className }: SidebarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const routes = [
     {
       label: "Overview",
@@ -117,28 +119,45 @@ function Sidebar({ className }: SidebarProps) {
     },
   ];
 
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    window.location.reload();
+  };
+
   return (
-    <div className={cn("pb-12 w-64", className)}>
-      <div className="space-y-4 py-4">
-        <div className="px-3 py-2">
-          <h2 className="mb-2 px-4 text-lg font-semibold">Admin Dashboard</h2>
-          <Separator />
-        </div>
-        <ScrollArea className="px-3">
-          <div className="space-y-1">
-            {routes.map((route) => (
-              <Link key={route.href} href={route.href}>
-                <Button
-                  variant={pathname === route.href ? "secondary" : "ghost"}
-                  className="w-full justify-start"
-                >
-                  <route.icon className={cn("mr-2 h-4 w-4", route.color)} />
-                  {route.label}
-                </Button>
-              </Link>
-            ))}
+    <div className={cn("pb-12 w-64 flex flex-col justify-between", className)}>
+      <div>
+        <div className="space-y-4 py-4">
+          <div className="px-3 py-2">
+            <h2 className="mb-2 px-4 text-lg font-semibold">Admin Dashboard</h2>
+            <Separator />
           </div>
-        </ScrollArea>
+          <ScrollArea className="px-3">
+            <div className="space-y-1">
+              {routes.map((route) => (
+                <Link key={route.href} href={route.href}>
+                  <Button
+                    variant={pathname === route.href ? "secondary" : "ghost"}
+                    className="w-full justify-start"
+                  >
+                    <route.icon className={cn("mr-2 h-4 w-4", route.color)} />
+                    {route.label}
+                  </Button>
+                </Link>
+              ))}
+            </div>
+          </ScrollArea>
+          <div className="px-3">
+            <Button
+              onClick={handleLogout}
+              variant="ghost"
+              className="w-full justify-start"
+            >
+              <LogOut className="mr-2 h-4 w-4 text-red-500" />
+              Logout
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

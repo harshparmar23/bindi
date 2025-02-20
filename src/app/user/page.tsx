@@ -1,12 +1,14 @@
 "use client";
 
-import UserpageDetails from "@/app/components/UserDetailsPage";
-import OrdersPage from "@/app/components/UserOrderPage";
-import CartPage from "@/app/components/UserCartPage";
-import HomeTab from "@/app/components/Hometab";
-import { useState, useEffect, Suspense } from "react";
+import UserpageDetails from "@/components/UserDetailsPage";
+import OrdersPage from "@/components/UserOrderPage";
+import CartPage from "@/components/UserCartPage";
+import HomeTab from "@/components/Hometab";
+import { useState, useEffect } from "react";
 import { useSearchParams, useRouter, usePathname } from "next/navigation";
 import { signOut, useSession } from "next-auth/react";
+import { Button } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 import {
   Home,
   User,
@@ -14,29 +16,41 @@ import {
   ShoppingCart,
   Settings,
   LogOut,
-  ChevronLeft,
 } from "lucide-react";
 
 const UserPage = () => {
-  const { data: session, status } = useSession();
   const searchParams = useSearchParams();
   const router = useRouter();
   const pathname = usePathname();
-  const userId = (session?.user as { id: string })?.id;
+  const [user, setUser] = useState<{ userId: string } | null>(null);
 
-  const initialTab = searchParams.get("tab") || "home";
-  const [activeTab, setActiveTab] = useState<string>(initialTab);
-  const [isHovered, setIsHovered] = useState<string | null>(null);
+  const handleLogout = async () => {
+    await fetch("/api/logout", { method: "POST" });
+    window.location.reload();
+  };
 
   useEffect(() => {
-    if (status === "unauthenticated") {
-      if (typeof window !== "undefined") {
+    const checkSession = async () => {
+      const res = await fetch("/api/session", {
+        method: "GET",
+        credentials: "include",
+      });
+      const data = await res.json();
+
+      if (!data.authenticated) {
         router.push(
           `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
         );
+      } else {
+        setUser({ userId: data.userId });
       }
-    }
-  }, [status, router]);
+    };
+    checkSession();
+  }, []);
+
+  const userId = user?.userId;
+  const initialTab = searchParams.get("tab") || "home";
+  const [activeTab, setActiveTab] = useState<string>(initialTab);
 
   useEffect(() => {
     const tabFromUrl = searchParams.get("tab") || "home";
@@ -45,13 +59,48 @@ const UserPage = () => {
     }
   }, [searchParams, activeTab]);
 
-  if (status === "loading") {
-    return (
-      <div className="min-h-screen flex items-center justify-center">
-        <div className="animate-spin rounded-full h-16 w-16 border-t-4 border-b-4 border-blue-500"></div>
-      </div>
-    );
-  }
+  const routes = [
+    {
+      label: "Home",
+      icon: Home,
+      id: "home",
+      color: "text-blue-500",
+      hoverColor: "hover:text-blue-600",
+      activeColor: "bg-blue-100",
+    },
+    {
+      label: "Details",
+      icon: User,
+      id: "details",
+      color: "text-indigo-500",
+      hoverColor: "hover:text-indigo-600",
+      activeColor: "bg-indigo-50",
+    },
+    {
+      label: "Orders",
+      icon: ShoppingBag,
+      id: "orders",
+      color: "text-cyan-500",
+      hoverColor: "hover:text-cyan-600",
+      activeColor: "bg-cyan-50",
+    },
+    {
+      label: "Cart",
+      icon: ShoppingCart,
+      id: "cart",
+      color: "text-teal-500",
+      hoverColor: "hover:text-teal-600",
+      activeColor: "bg-teal-50",
+    },
+    // {
+    //   label: "General",
+    //   icon: Settings,
+    //   id: "general",
+    //   color: "text-sky-500",
+    //   hoverColor: "hover:text-sky-600",
+    //   activeColor: "bg-sky-50",
+    // },
+  ];
 
   const handleTabChange = (tab: string) => {
     if (tab !== activeTab) {
@@ -62,113 +111,94 @@ const UserPage = () => {
     }
   };
 
-  const getTabIcon = (tab: string) => {
-    switch (tab) {
-      case "home":
-        return <Home className="w-5 h-5" />;
-      case "details":
-        return <User className="w-5 h-5" />;
-      case "orders":
-        return <ShoppingBag className="w-5 h-5" />;
-      case "cart":
-        return <ShoppingCart className="w-5 h-5" />;
-      case "general":
-        return <Settings className="w-5 h-5" />;
-      default:
-        return null;
-    }
-  };
-
   const renderContent = () => {
     switch (activeTab) {
       case "home":
-        return session?.user?.id ? (
-          <HomeTab userId={userId} />
-        ) : (
-          <p>Loading...</p>
-        );
+        return userId ? <HomeTab userId={userId} /> : "";
       case "details":
         return <UserpageDetails userId={userId} />;
       case "orders":
         return <OrdersPage userId={userId} />;
       case "cart":
         return <CartPage userId={userId} />;
-      case "general":
-        return <div className="p-4">General Information Content</div>;
-      default:
+        // case "general":
+        //   return <div className="p-4">General Information Content</div>;
+        // default:
         return (
-          <div className="p-4 text-lg">Select a tab from the sidebar.</div>
+          <div className="p-4 text-lg text-blue-800">
+            Select a tab from the sidebar.
+          </div>
         );
     }
   };
 
   return (
-    <div className="flex min-h-screen bg-gray-50">
-      {/* Left Sidebar */}
-      <div className="w-72 fixed left-0 top-16 h-full bg-white shadow-xl p-6 transition-all duration-300 border-r border-gray-100">
-        <h2 className="text-2xl font-bold mb-8 text-gray-800 tracking-tight">
-          Dashboard
-        </h2>
-        <div className="space-y-2">
-          {["home", "details", "orders", "cart", "general"].map((tab) => (
-            <button
-              key={tab}
-              className={`w-full flex items-center gap-3 px-4 py-3 rounded-xl transition-all duration-200 ${
-                activeTab === tab
-                  ? "bg-blue-500 text-white shadow-lg shadow-blue-500/30 scale-105"
-                  : "text-gray-600 hover:bg-gray-100"
-              } ${
-                isHovered === tab && activeTab !== tab
-                  ? "bg-gray-100 transform scale-102"
-                  : ""
-              }`}
-              onClick={() => handleTabChange(tab)}
-              onMouseEnter={() => setIsHovered(tab)}
-              onMouseLeave={() => setIsHovered(null)}
-            >
-              {getTabIcon(tab)}
-              <span className="font-medium">
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </span>
-            </button>
-          ))}
-        </div>
-        {pathname === "/user" && (
-          <button
-            onClick={() => signOut()}
-            className="w-full mt-8 flex items-center gap-3 px-4 py-3 rounded-xl text-red-500 hover:bg-red-50 transition-colors duration-200"
-          >
-            <LogOut className="w-5 h-5" />
-            <span className="font-medium">Logout</span>
-          </button>
-        )}
-      </div>
+    <>
+      <div className="fixed top-0 left-0 w-full h-[10vh] md:h-[12vh] bg-[#E0F2FE] z-20"></div>
+      <div className="min-h-screen bg-[#E0F2FE]">
+        {/* Responsive Sidebar/Bottom Navigation */}
+        <div className="fixed lg:w-72 lg:left-0 lg:top-[18vh] lg:h-full lg:bottom-auto bottom-0 left-0 w-full h-16 z-30 bg-[#E0F2FE] transition-all duration-300">
+          {/* Desktop Header */}
 
-      {/* Main Content */}
-      <div className="flex-1 ml-72 p-8 pt-20">
-        {activeTab !== "home" && (
-          <button
-            className="mb-6 px-4 py-2 flex items-center gap-2 text-gray-600 hover:text-gray-800 transition-colors duration-200"
-            onClick={() => handleTabChange("home")}
-          >
-            <ChevronLeft className="w-5 h-5" />
-            <span>Back to Home</span>
-          </button>
-        )}
-        <div className="w-full max-w-4xl mx-auto">
-          <div className="bg-white rounded-2xl shadow-xl p-6 transition-all duration-300 hover:shadow-2xl">
-            {renderContent()}
+          {/* Navigation Items */}
+          <div className="h-full lg:px-6">
+            <div className="flex lg:flex-col h-full lg:space-y-3 justify-around lg:justify-start items-center lg:items-stretch">
+              {routes.map((route) => (
+                <Button
+                  key={route.id}
+                  variant={activeTab === route.id ? "secondary" : "ghost"}
+                  onClick={() => handleTabChange(route.id)}
+                  className={cn(
+                    "w-full justify-center md:justify-start transition-all duration-300 py-6 text-base font-medium",
+                    "hover:scale-[1.02]",
+                    activeTab === route.id
+                      ? `${route.activeColor} ${route.color} font-semibold`
+                      : "hover:bg-[#D0EFFF]",
+                    route.hoverColor
+                  )}
+                >
+                  <div className="flex flex-col lg:flex-row items-center">
+                    <route.icon
+                      className={cn(
+                        "h-5 w-5 mb-1 md:mb-0 md:mr-3 transition-transform duration-300",
+                        route.color,
+                        activeTab === route.id && "scale-110"
+                      )}
+                    />
+                    {route.label}
+                  </div>
+                </Button>
+              ))}
+
+              {/* Logout Button - Desktop Only */}
+              {pathname === "/user" && (
+                <Button
+                  variant="ghost"
+                  onClick={() => handleLogout()}
+                  className={cn(
+                    "hidden lg:flex items-center gap-3 w-full justify-start",
+                    "text-red-500 hover:bg-[#D0EFFF] hover:text-red-600",
+                    "transition-all duration-300 hover:scale-[1.02]",
+                    "mt-4 py-6 text-base font-medium"
+                  )}
+                >
+                  <LogOut className="mr-3 h-5 w-5 transition-transform duration-300" />
+                  Logout
+                </Button>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <div className="flex-1 -translate-y-10 lg:-translate-y-0 pt-[14vh] lg:pl-[18rem] pb-[8vh] lg:pb-[4vh]">
+          <div className="max-w-4xl mx-auto md:px-4 xl:-translate-x-[5vh]">
+            <div className="rounded-lg">{renderContent()}</div>
           </div>
         </div>
       </div>
-    </div>
+    </>
   );
 };
 
-const UserPageWrapper = () => {
-  <Suspense fallback={<div>Loading...</div>}>
-    <UserPage />
-  </Suspense>;
-};
-
-export default UserPageWrapper;
+export default UserPage;

@@ -1,21 +1,42 @@
-import { NextResponse } from "next/server";
 import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/lib/auth";
-import connectDB from "@/app/lib/connectDB";
-import Product from "@/app/models/Product";
-import "@/app/models/Category";
+import { authOptions } from "@/lib/auth";
+import connectDB from "@/lib/connectDB";
+import Product from "@/models/Product";
+import "@/models/Category";
+import { NextRequest, NextResponse } from "next/server";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
 // In this single route file, we handle all CRUD operations.
 // Product ID for GET (one), PUT and DELETE should be provided as a search parameter "id".
 // When no "id" is provided, GET returns all products and POST creates a new product.
-export async function GET(request: Request) {
+export async function GET(req: NextRequest) {
   try {
     await connectDB();
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const token = req.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({
+        authenticated: false,
+        message: "No token found",
+      });
     }
-    const { searchParams } = new URL(request.url);
+
+    // Decode the token to get user data
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const userId = decoded.userId;
+    console.log("Decoded UserId:", userId);
+
+    // Fetch user details from the backend API using the userId
+    const res = await fetch(
+      `http://localhost:3000/api/user/details?userId=${userId}`
+    );
+    const userData = await res.json();
+    console.log(userData);
+
+    if (!userData || !userData.user.role || userData.user.role !== "admin") {
+      return NextResponse.redirect("/admin/login");
+    }
+    const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     if (id) {
       // Return specific product with populated category
@@ -43,14 +64,34 @@ export async function GET(request: Request) {
   }
 }
 
-export async function POST(request: Request) {
+export async function POST(req: NextRequest) {
   try {
     await connectDB();
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const token = req.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({
+        authenticated: false,
+        message: "No token found",
+      });
     }
-    const data = await request.json();
+
+    // Decode the token to get user data
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const userId = decoded.userId;
+    console.log("Decoded UserId:", userId);
+
+    // Fetch user details from the backend API using the userId
+    const res = await fetch(
+      `http://localhost:3000/api/user/details?userId=${userId}`
+    );
+    const userData = await res.json();
+    console.log(userData);
+
+    if (!userData || !userData.user.role || userData.user.role !== "admin") {
+      return NextResponse.redirect("/admin/login");
+    }
+    const data = await req.json();
 
     // Remove _id if provided with an empty string to avoid casting error
     if (data._id === "") {
@@ -76,14 +117,34 @@ export async function POST(request: Request) {
   }
 }
 
-export async function PUT(request: Request) {
+export async function PUT(req: NextRequest) {
   try {
     await connectDB();
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const token = req.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({
+        authenticated: false,
+        message: "No token found",
+      });
     }
-    const { searchParams } = new URL(request.url);
+
+    // Decode the token to get user data
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const userId = decoded.userId;
+    console.log("Decoded UserId:", userId);
+
+    // Fetch user details from the backend API using the userId
+    const res = await fetch(
+      `http://localhost:3000/api/user/details?userId=${userId}`
+    );
+    const userData = await res.json();
+    console.log(userData);
+
+    if (!userData || !userData.user.role || userData.user.role !== "admin") {
+      return NextResponse.redirect("/admin/login");
+    }
+    const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     if (!id) {
       return NextResponse.json(
@@ -91,7 +152,7 @@ export async function PUT(request: Request) {
         { status: 400 }
       );
     }
-    const data = await request.json();
+    const data = await req.json();
     // Validate required fields for update if needed
     if (!data.name || !data.price || !data.description || !data.category) {
       return NextResponse.json(
@@ -116,14 +177,34 @@ export async function PUT(request: Request) {
   }
 }
 
-export async function DELETE(request: Request) {
+export async function DELETE(req: NextRequest) {
   try {
     await connectDB();
-    const session = await getServerSession(authOptions);
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    const token = req.cookies.get("token")?.value;
+
+    if (!token) {
+      return NextResponse.json({
+        authenticated: false,
+        message: "No token found",
+      });
     }
-    const { searchParams } = new URL(request.url);
+
+    // Decode the token to get user data
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    const userId = decoded.userId;
+    console.log("Decoded UserId:", userId);
+
+    // Fetch user details from the backend API using the userId
+    const res = await fetch(
+      `http://localhost:3000/api/user/details?userId=${userId}`
+    );
+    const userData = await res.json();
+    console.log(userData);
+
+    if (!userData || !userData.user.role || userData.user.role !== "admin") {
+      return NextResponse.redirect("/admin/login");
+    }
+    const { searchParams } = new URL(req.url);
     const id = searchParams.get("id");
     if (!id) {
       return NextResponse.json(

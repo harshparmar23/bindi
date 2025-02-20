@@ -1,33 +1,34 @@
-import { NextResponse } from "next/server";
-import Order from "@/app/models/Order";
-import connectDB from "@/app/lib/connectDB";
-import { getSession } from "next-auth/react";
+import connectDB from "@/lib/connectDB";
+import Order from "@/models/Order";
+import { NextRequest, NextResponse } from "next/server";
+import jwt, { JwtPayload } from "jsonwebtoken";
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
-    const session = await getSession();
-    if (!session || session.user.role !== "admin") {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-    }
-
     await connectDB();
-    const total = await Order.countDocuments();
-    const pending = await Order.countDocuments({ status: "pending" });
-    const shipped = await Order.countDocuments({ status: "shipped" });
-    const delivered = await Order.countDocuments({ status: "delivered" });
-    const cancelled = await Order.countDocuments({ status: "cancelled" });
+    // Verify admin token
+    const token = req.cookies.get("token")?.value;
+    if (!token) {
+      return NextResponse.json({ error: "Not authenticated" }, { status: 401 });
+    }
+    const decoded = jwt.verify(token, process.env.JWT_SECRET!) as JwtPayload;
+    // (Optionally) check admin role with decoded.userId and User model
 
-    return NextResponse.json({
-      total,
-      pending,
-      shipped,
-      delivered,
-      cancelled,
-    });
-  } catch (error) {
-    console.error("Error fetching order stats:", error);
+    // Total orders count
+    const totalOrders = await Order.countDocuments();
+
+    // Get pending orders
+    const pendingOrders = await Order.find({ status: "pending" });
+    // For dashboard alerts, you might want to convert each pending order to a short message
+    const pendingAlerts = pendingOrders.map(
+      (order) => `Order ${order._id} is pending`
+    );
+
+    return NextResponse.json({ totalOrders, pendingAlerts });
+  } catch (error: any) {
+    console.error("Error in orders stats:", error);
     return NextResponse.json(
-      { error: "Internal Server Error" },
+      { error: "Internal server error" },
       { status: 500 }
     );
   }

@@ -1,12 +1,13 @@
 "use client";
 
-import { Suspense, useEffect, useRef, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useDebounce } from "@/app/hooks/useDebounce";
-import ProductCard from "../components/ProductCard";
+import { useDebounce } from "@/hooks/useDebounce";
+import ProductCard from "../../components/ProductCard";
 import { toast } from "react-hot-toast";
 import { Plus, Minus, Search, ChevronRight, Filter } from "lucide-react";
-import { useSession } from "next-auth/react";
+import ImageSlider from "@/components/menu";
+// import { useSession } from "next-auth/react";
 
 interface Product {
   _id: string;
@@ -33,11 +34,11 @@ interface CartItem {
   quantity: number;
 }
 
-function Products() {
+export default function ProductsPage() {
   const itemsRef = useRef<HTMLDivElement>(null);
   const router = useRouter();
   const searchParams = useSearchParams();
-  const { data: session } = useSession();
+  // const { data: session } = useSession();
 
   // State variables
   const [products, setProducts] = useState<Product[]>([]);
@@ -62,6 +63,39 @@ function Products() {
   const [categoryDropdownOpen, setCategoryDropdownOpen] = useState(false);
   const [priceDropdownOpen, setPriceDropdownOpen] = useState(false);
   const [isMobileFilterOpen, setIsMobileFilterOpen] = useState(false);
+  const [user, setUser] = useState<{
+    userId: string;
+    phone: string;
+    role: string;
+  } | null>(null);
+
+  const [menuOpen, setMenuOpen] = useState(false);
+
+  const toggleMenu = () => {
+    setMenuOpen(!menuOpen);
+  };
+
+  const closeMenu = () => {
+    setMenuOpen(false);
+  };
+
+  useEffect(() => {
+    const checkSession = async () => {
+      const res = await fetch("/api/session", {
+        method: "GET",
+        credentials: "include", // ✅ Ensures cookies are sent with request
+      });
+
+      const data = await res.json();
+      console.log(data);
+      if (data.authenticated) {
+        setUser({ userId: data.userId, phone: data.phone, role: data.role });
+      } else {
+        console.log("Not authenticated:", data.message);
+      }
+    };
+    checkSession();
+  }, []);
 
   // Fetch products when filter conditions change
   useEffect(() => {
@@ -147,7 +181,8 @@ function Products() {
   // Fetch cart quantities when user session changes
   useEffect(() => {
     async function fetchCartQuantities() {
-      const userId = (session?.user as { id: string })?.id;
+      // const userId = (session?.user as { id: string })?.id;
+      const userId = user?.userId;
       if (!userId) {
         setCartQuantities({});
         return;
@@ -171,63 +206,58 @@ function Products() {
     }
 
     fetchCartQuantities();
-  }, [session?.user]);
+  }, [user]);
 
   // Set body overflow to prevent horizontal scroll
   useEffect(() => {
-    if (process.env.NEXT_PUBLIC_IGNORE_DOCUMENT !== "true") {
-      // Check if we're in the browser environment
-      if (typeof window !== "undefined") {
-        globalThis.document.body.style.overflowX = "hidden";
-        return () => {
-          globalThis.document.body.style.overflowX = "auto";
-        };
-      }
-    }
+    document.body.style.overflowX = "hidden";
+    return () => {
+      document.body.style.overflowX = "auto";
+    };
   }, []);
 
   // Add to cart function
   const addToCart = async (productId: string) => {
     setUpdatingCart(productId);
-    if (typeof window !== "undefined") {
-      try {
-        const userId = (session?.user as { id: string })?.id;
-        if (!userId) {
-          router.push(
-            `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
-          );
-          return;
-        }
 
-        const response = await fetch("/api/cart", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({
-            userId,
-            productId,
-            quantity: 1,
-            action: "increase",
-          }),
-        });
-
-        if (!response.ok) {
-          throw new Error("Failed to add to cart");
-        }
-
-        setCartQuantities((prev) => ({
-          ...prev,
-          [productId]: 1,
-        }));
-
-        toast.success("Added to cart!");
-      } catch (err) {
-        toast.error("Failed to add to cart");
-        console.error("Error adding to cart:", err);
-      } finally {
-        setUpdatingCart(null);
+    try {
+      // const userId = (session?.user as { id: string })?.id;
+      const userId = user?.userId;
+      if (!userId) {
+        router.push(
+          `/auth?callbackUrl=${encodeURIComponent(window.location.href)}`
+        );
+        return;
       }
+
+      const response = await fetch("/api/cart", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          userId,
+          productId,
+          quantity: 1,
+          action: "increase",
+        }),
+      });
+
+      if (!response.ok) {
+        throw new Error("Failed to add to cart");
+      }
+
+      setCartQuantities((prev) => ({
+        ...prev,
+        [productId]: 1,
+      }));
+
+      toast.success("Added to cart!");
+    } catch (err) {
+      toast.error("Failed to add to cart");
+      console.error("Error adding to cart:", err);
+    } finally {
+      setUpdatingCart(null);
     }
   };
 
@@ -237,15 +267,15 @@ function Products() {
     setUpdatingCart(productId);
 
     try {
-      const userId = (session?.user as { id: string })?.id;
-      if (typeof window !== "undefined") {
-        if (!userId) {
-          router.push(
-            `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
-          );
-          return;
-        }
+      // const userId = (session?.user as { id: string })?.id;
+      const userId = user?.userId;
+      if (!userId) {
+        router.push(
+          `/signin?callbackUrl=${encodeURIComponent(window.location.href)}`
+        );
+        return;
       }
+
       const response = await fetch("/api/cart", {
         method: "POST",
         headers: {
@@ -398,7 +428,7 @@ function Products() {
     <div className="max-w-screen overflow-x-hidden min-h-screen bg-[#dcf5ff] pb-[8vh] min-px-[2%] font-ancient text-[#08410c]">
       {/* Category Filter */}
       <div className="flex-1 ">
-        <div className="absolute top-0 left-0 right-0 bg-[#dcf5ff] z-20 pt-[114px]">
+        <div className="fixed top-0 left-0 right-0 bg-[#dcf5ff] z-20 pt-[80px] md:pt-[100px]">
           {/* Mobile View */}
           <div className="md:hidden flex gap-4 p-4 items-center justify-center">
             <button
@@ -422,12 +452,35 @@ function Products() {
                 size={20}
               />
             </div>
+            <div>
+              <button
+                onClick={toggleMenu}
+                className="rounded-2xl bg-[#d1eafe] shadow-xl text-[#08410c] px-4 py-2 font-semibold"
+              >
+                <span className="">&#9776;</span>
+              </button>
+              {menuOpen && (
+                <div
+                  className={`fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center transition-transform duration-500 ease-in-out ${
+                    menuOpen ? "translate-y-0" : "-translate-y-full"
+                  }`}
+                  onClick={closeMenu}
+                >
+                  <div
+                    className="relative bg-transparent w-11/12 md:w-3/4 lg:w-1/2"
+                    onClick={(e) => e.stopPropagation()}
+                  >
+                    <ImageSlider />
+                  </div>
+                </div>
+              )}
+            </div>
           </div>
 
           {/* Mobile Filter Modal */}
           <div
             className={`
-              fixed left-1/2 -translate-x-[56%] top-[190px] w-[75%] duration-300 z-50 rounded-2xl
+              fixed left-1/2 -translate-x-[65%] top-[150px] w-[75%] duration-300 z-50 rounded-2xl
               ${
                 isMobileFilterOpen
                   ? "opacity-100"
@@ -653,11 +706,34 @@ function Products() {
                   size={20}
                 />
               </div>
+              <div>
+                <button
+                  onClick={toggleMenu}
+                  className="rounded-2xl bg-[#d1eafe] shadow-xl text-[#08410c] px-4 py-2 font-semibold"
+                >
+                  <span className="mr-2">&#9776;</span> Menu
+                </button>
+                {menuOpen && (
+                  <div
+                    className={`fixed top-0 left-0 w-full h-full bg-black bg-opacity-50 flex justify-center items-center transition-transform duration-500 ease-in-out ${
+                      menuOpen ? "translate-y-0" : "-translate-y-full"
+                    }`}
+                    onClick={closeMenu}
+                  >
+                    <div
+                      className="relative bg-transparent p-8 w-11/12 md:w-3/4 lg:w-1/2 my-auto"
+                      onClick={(e) => e.stopPropagation()}
+                    >
+                      <ImageSlider />
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
           </div>
         </div>
 
-        <div className="w-full pt-[175px] md:pt-[185px] ">
+        <div className="w-full pt-[140px] md:pt-[160px] ">
           <div ref={itemsRef} className="p-2 md:p-4 flex justify-center ">
             <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-3 gap-2 md:gap-6">
               {renderProductCards()}
@@ -666,20 +742,5 @@ function Products() {
         </div>
       </div>
     </div>
-  );
-}
-
-export default function ProductsPage() {
-  // Check if we're in the browser environment
-  const isBrowser = typeof window !== "undefined";
-
-  if (!isBrowser) {
-    return null; // Return null during server-side rendering
-  }
-
-  return (
-    <Suspense fallback={<div>Loading...</div>}>
-      <Products />
-    </Suspense>
   );
 }

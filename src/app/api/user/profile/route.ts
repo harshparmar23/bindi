@@ -1,8 +1,8 @@
 import { getServerSession } from "next-auth/next";
 import { NextResponse } from "next/server";
-import connectDB from "@/app/lib/connectDB";
-import User from "@/app/models/User";
-import { authOptions } from "@/app/lib/auth";
+import connectDB from "@/lib/connectDB";
+import User from "@/models/User";
+import { authOptions } from "@/lib/auth";
 
 export async function GET() {
   try {
@@ -12,9 +12,8 @@ export async function GET() {
     }
 
     await connectDB();
-    const user = await User.findOne({ email: session.user.email }).select(
-      "-password"
-    );
+    const user = await User.findOne({ email: session.user.email })
+      .select('-password');
 
     return NextResponse.json(user);
   } catch (error) {
@@ -40,7 +39,7 @@ export async function PUT(req: Request) {
     // Check if phone number is already in use by another user
     const existingPhone = await User.findOne({
       phone,
-      email: { $ne: session.user.email },
+      email: { $ne: session.user.email }
     });
 
     if (existingPhone) {
@@ -55,10 +54,10 @@ export async function PUT(req: Request) {
       {
         phone,
         area,
-        profileComplete: true,
+        profileComplete: true
       },
       { new: true }
-    ).select("-password");
+    ).select('-password');
 
     return NextResponse.json(updatedUser);
   } catch (error) {
