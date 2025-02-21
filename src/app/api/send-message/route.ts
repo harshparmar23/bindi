@@ -12,8 +12,8 @@ export async function POST(request: Request) {
     .create({
       body: message,
       from: "whatsapp:+14155238886", // Your Twilio WhatsApp number
-      // to: "whatsapp:+918320846640", // Recipient number
-      to: "whatsapp:+917600960068", // Recipient number
+      to: "whatsapp:+918320846640", // Recipient number
+      // to: "whatsapp:+917600960068", // Recipient number
     })
     .then((message: { sid: string }) =>
       console.log(`Message sent with SID: ${message.sid}`)
