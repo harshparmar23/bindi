@@ -3,8 +3,8 @@ import twilio from "twilio";
 
 export async function POST(request: Request) {
   const { phoneNumber, message } = await request.json();
-  const accountSid: string = "ACacc7bef3837101d5e0ccea50f7497441";
-  const authToken: string = "47258132e0a724a7ad737dd6ecbe369f";
+  const accountSid: string = "ACc1e760a866120b8ae2166dbef01ee333";
+  const authToken: string = "6ed5a07ba1822467b242dda7ee6aa249";
 
   const client = twilio(accountSid, authToken);
 
@@ -12,7 +12,8 @@ export async function POST(request: Request) {
     .create({
       body: message,
       from: "whatsapp:+14155238886", // Your Twilio WhatsApp number
-      to: `whatsapp:+91${phoneNumber}`, // Recipient number
+      // to: "whatsapp:+918320846640", // Recipient number
+      to: "whatsapp:+917600960068", // Recipient number
     })
     .then((message: { sid: string }) =>
       console.log(`Message sent with SID: ${message.sid}`)

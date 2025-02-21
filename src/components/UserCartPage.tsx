@@ -190,7 +190,7 @@ export default function CartPage({ userId }: { userId: string | undefined }) {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({
-          phoneNumber: "7600960068",
+          phoneNumber: "+917600960068",
           message: `Order Confirmed! 📦\n\nOrder ID: ${orderId}\nUser ID: ${userId}\n📞 *Contact:* ${
             userData.user.phone
           }\n
