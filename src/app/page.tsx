@@ -11,11 +11,37 @@ import CustomerReviews from "@/components/HomeCustomerReviews";
 import TopItems from "@/components/HomeTopItems";
 import FAQs from "@/components/HomeFaqs";
 import Footer from "@/components/Footer";
+import { NextSeo } from "next-seo";
 
 // Create a custom event for preloader state
 const preloaderEvent = new Event("preloaderComplete");
 
 export default function Home() {
+  <NextSeo
+    title="Bindi Cupcakery - Home"
+    description="Welcome to Bindi Cupcakery, your one-stop shop for the most delicious cupcakes and desserts. Explore our wide range of products and visit us for the best cupcakes in town."
+    canonical="https://www.bindicupcakery.com/"
+    openGraph={{
+      url: "https://www.bindicupcakery.com/",
+      title: "Bindi Cupcakery - Home",
+      description:
+        "Welcome to Bindi Cupcakery, your one-stop shop for the most delicious cupcakes and desserts. Explore our wide range of products and visit us for the best cupcakes in town.",
+      images: [
+        {
+          url: "https://www.bindicupcakery.com/images/og-image.jpg",
+          width: 1200,
+          height: 630,
+          alt: "Bindi Cupcakery",
+        },
+      ],
+      site_name: "Bindi Cupcakery",
+    }}
+    twitter={{
+      handle: "@bindicupcakery",
+      site: "@bindicupcakery",
+      cardType: "summary_large_image",
+    }}
+  />;
   const [isLoading, setIsLoading] = useState(true);
   const [shouldRender, setShouldRender] = useState(true);
   const homeRef = useRef(null);
