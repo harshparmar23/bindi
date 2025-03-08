@@ -3,8 +3,9 @@ import twilio from "twilio";
 
 export async function POST(request: Request) {
   const { phoneNumber, message } = await request.json();
-  const accountSid: string = "ACc1e760a866120b8ae2166dbef01ee333";
-  const authToken: string = "6ed5a07ba1822467b242dda7ee6aa249";
+  const accountSid: string = process.env.TWILIO_ACCOUNT_SID!;
+  const authToken: string = process.env.TWILIO_AUTH_TOKEN!;
+  // const authToken: string = "6ed5a07ba1822467b242dda7ee6aa249";
 
   const client = twilio(accountSid, authToken);
 
